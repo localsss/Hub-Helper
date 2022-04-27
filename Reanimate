@@ -1,0 +1,108 @@
+local character = game.Players.LocalPlayer.Character
+local clone = game.Players.LocalPlayer.Character
+clone.Archivable = true
+local folder = Instance.new("Folder", clone)
+local new = clone:Clone()
+new.Parent = folder
+
+clone.Humanoid.Animator:Destroy()
+clone.Animate:Destroy()
+
+game["Run Service"].Heartbeat:connect(
+    function()
+        settings().Physics.AllowSleep = false
+    end
+)
+
+for m, n in next, game:GetService("Players").LocalPlayer.Character:GetDescendants() do
+    if n:IsA("BasePart") and n.Name ~= "HumanoidRootPart" then
+        game:GetService("RunService").Heartbeat:connect(
+            function()
+                n.Velocity = Vector3.new(0, 0, -50)
+            end
+        )
+    end
+end
+
+game.RunService.Stepped:Connect(
+    function()
+        for _, v in pairs(clone:GetDescendants()) do
+            if v:IsA("Part") then
+                v.CanCollide = false
+            end
+        end
+    end
+)
+game.RunService.Stepped:Connect(
+    function()
+        for _, v in pairs(new:GetDescendants()) do
+            if v:IsA("Part") then
+                v.CanCollide = false
+            end
+        end
+    end
+)
+
+game:GetService("RunService").Stepped:Connect(
+    function()
+        for c, b in pairs(new:GetDescendants()) do
+            if b:IsA("Part") or b:IsA("Mesh") then
+                b.Transparency = 1
+            end
+        end
+        for xx, zz in pairs(new:GetDescendants()) do
+            if zz:IsA("Decal") then
+                zz.Transparency = 1
+            end
+        end
+    end
+)
+
+function br(part, part2, offset)
+    part:BreakJoints()
+    game:GetService("RunService").Heartbeat:Connect(
+        function()
+            part.CFrame = part2.CFrame + offset
+        end
+    )
+end
+function uh(part, part2, offset)
+    game:GetService("RunService").Heartbeat:Connect(
+        function()
+            part.CFrame = part2.CFrame + offset
+        end
+    )
+end
+
+br(clone["Left Arm"], new["Left Arm"], Vector3.new(0, 0, 0))
+br(clone["Right Arm"], new["Right Arm"], Vector3.new(0, 0, 0))
+br(clone["Left Leg"], new["Left Leg"], Vector3.new(0, 0, 0))
+br(clone["Right Leg"], new["Right Leg"], Vector3.new(0, 0, 0))
+uh(clone["HumanoidRootPart"], new["Torso"], Vector3.new(0, 0, 0))
+
+game.Players.LocalPlayer.Character = new
+workspace.Camera.CameraSubject = new
+
+new.Humanoid.Died:Connect(
+    function()
+        clone.Humanoid.Health = 0
+        game.Players.LocalPlayer.Character = clone
+        new:BreakJoints()
+        clone:BreakJoints()
+        new.Humanoid.Health = 0
+        new.Humanoid.Parent = nil
+        clone.Humanoid.Parent = nil
+    end
+)
+
+clone.Humanoid.Died:Connect(
+    function()
+        clone.Humanoid.Health = 0
+        game.Players.LocalPlayer.Character = clone
+        new:BreakJoints()
+        clone:BreakJoints()
+        new.Humanoid.Health = 0
+        new.Humanoid.Parent = nil
+        clone.Humanoid.Parent = nil
+    end
+)
